@@ -1,6 +1,6 @@
 # gm82font
 
-`gm82font` is a text rendering DLL for GameMaker 8 / 8.2. Its goal is to fill the gap in the original font system, especially for drawing non-English text such as Chinese.
+`gm82font` is a text rendering DLL for GameMaker 8.2. Its goal is to fill the gap in the original font system, especially for drawing non-English text such as Chinese.
 
 The current implementation uses FreeType, hooks into the GameMaker 8.2 runner's internal texture/render path, caches glyphs per character, and submits quads directly through D3D8.
 
