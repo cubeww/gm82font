@@ -7,7 +7,6 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
-#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -107,7 +106,8 @@ struct PreparedTextLine {
     std::vector<ShapedGlyph> glyphs;
 };
 
-std::mutex g_mutex;
+CRITICAL_SECTION g_mutex;
+bool g_mutex_ready = false;
 std::unordered_map<std::uint32_t, FontFace> g_fonts;
 std::uint32_t g_next_font_handle = 1;
 std::string g_last_error;
@@ -134,6 +134,16 @@ constexpr std::uint32_t kD3DFvfGlyphVertex = kD3DFvfXyzrhw | kD3DFvfDiffuse | kD
 
 std::wstring AcpToWide(const char* text);
 GlyphCacheEntry* EnsureGlyphCached(FontFace* font, std::uint32_t codepoint);
+
+struct ScopedLock {
+    ScopedLock() {
+        EnterCriticalSection(&g_mutex);
+    }
+
+    ~ScopedLock() {
+        LeaveCriticalSection(&g_mutex);
+    }
+};
 
 void SetLastErrorString(const std::string& error) {
     g_last_error = error;
@@ -1455,12 +1465,12 @@ double MeasureHeightFromRawString(FontFace* font, const char* text, double line_
 extern "C" {
 
 __declspec(dllexport) const char* __cdecl gm82font_last_error() {
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
     return g_last_error.c_str();
 }
 
 __declspec(dllexport) double __cdecl gm82font_font_add(const char* path, double pixel_size_value) {
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
 
     if (!EnsureFreetype()) {
         return -1.0;
@@ -1507,7 +1517,7 @@ __declspec(dllexport) double __cdecl gm82font_font_add(const char* path, double 
 
 __declspec(dllexport) double __cdecl gm82font_font_delete(double handle_value) {
     const std::uint32_t handle = RealToU32(handle_value);
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
 
     auto it = g_fonts.find(handle);
     if (handle == 0 || it == g_fonts.end()) {
@@ -1525,7 +1535,7 @@ __declspec(dllexport) double __cdecl gm82font_font_delete(double handle_value) {
 }
 
 __declspec(dllexport) double __cdecl gm82font_string_width(double font_handle_value, const char* text) {
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
 
     const std::uint32_t font_handle = RealToU32(font_handle_value);
     auto font_it = g_fonts.find(font_handle);
@@ -1543,7 +1553,7 @@ __declspec(dllexport) double __cdecl gm82font_string_width_ext(
     double sep_value,
     double wrap_width_value) {
     (void)sep_value;
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
 
     const std::uint32_t font_handle = RealToU32(font_handle_value);
     auto font_it = g_fonts.find(font_handle);
@@ -1556,7 +1566,7 @@ __declspec(dllexport) double __cdecl gm82font_string_width_ext(
 }
 
 __declspec(dllexport) double __cdecl gm82font_string_height(double font_handle_value, const char* text) {
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
 
     const std::uint32_t font_handle = RealToU32(font_handle_value);
     auto font_it = g_fonts.find(font_handle);
@@ -1573,7 +1583,7 @@ __declspec(dllexport) double __cdecl gm82font_string_height_ext(
     const char* text,
     double sep_value,
     double wrap_width_value) {
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
 
     const std::uint32_t font_handle = RealToU32(font_handle_value);
     auto font_it = g_fonts.find(font_handle);
@@ -1591,7 +1601,7 @@ __declspec(dllexport) double __cdecl gm82font_set_text_transform(
     double xscale_value,
     double yscale_value,
     double angle_value) {
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
     g_ext_draw_state.line_sep = std::isfinite(sep_value) ? sep_value : -1.0;
     g_ext_draw_state.wrap_width = std::isfinite(wrap_width_value) ? wrap_width_value : -1.0;
     g_ext_draw_state.xscale = std::isfinite(xscale_value) ? xscale_value : 1.0;
@@ -1607,7 +1617,7 @@ __declspec(dllexport) double __cdecl gm82font_set_text_gradient(
     double c3_value,
     double c4_value,
     double alpha_value) {
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
     g_ext_draw_state.c1 = std::isfinite(c1_value) ? (static_cast<std::uint32_t>(std::llround(c1_value)) & 0x00FFFFFFu) : 0x00FFFFFFu;
     g_ext_draw_state.c2 = std::isfinite(c2_value) ? (static_cast<std::uint32_t>(std::llround(c2_value)) & 0x00FFFFFFu) : 0x00FFFFFFu;
     g_ext_draw_state.c3 = std::isfinite(c3_value) ? (static_cast<std::uint32_t>(std::llround(c3_value)) & 0x00FFFFFFu) : 0x00FFFFFFu;
@@ -1623,7 +1633,7 @@ __declspec(dllexport) double __cdecl gm82font_draw_text_ext_transformed_color(
     double x_value,
     double y_value,
     const char* text) {
-    std::lock_guard<std::mutex> lock(g_mutex);
+    ScopedLock lock;
 
     const std::uint32_t font_handle = RealToU32(font_handle_value);
     auto font_it = g_fonts.find(font_handle);
@@ -1636,19 +1646,31 @@ __declspec(dllexport) double __cdecl gm82font_draw_text_ext_transformed_color(
 }
 
 BOOL APIENTRY DllMain(HMODULE, DWORD reason, LPVOID) {
+    if (reason == DLL_PROCESS_ATTACH) {
+        InitializeCriticalSection(&g_mutex);
+        g_mutex_ready = true;
+        return TRUE;
+    }
+
     if (reason == DLL_PROCESS_DETACH) {
-        std::lock_guard<std::mutex> lock(g_mutex);
-        for (auto& [_, font] : g_fonts) {
-            FreeGlyphCache(&font);
-            if (font.face != nullptr) {
-                FT_Done_Face(font.face);
+        if (g_mutex_ready) {
+            ScopedLock lock;
+            for (auto& [_, font] : g_fonts) {
+                FreeGlyphCache(&font);
+                if (font.face != nullptr) {
+                    FT_Done_Face(font.face);
+                }
+            }
+            g_fonts.clear();
+            if (g_freetype_ready && g_freetype != nullptr) {
+                FT_Done_FreeType(g_freetype);
+                g_freetype = nullptr;
+                g_freetype_ready = false;
             }
         }
-        g_fonts.clear();
-        if (g_freetype_ready && g_freetype != nullptr) {
-            FT_Done_FreeType(g_freetype);
-            g_freetype = nullptr;
-            g_freetype_ready = false;
+        if (g_mutex_ready) {
+            DeleteCriticalSection(&g_mutex);
+            g_mutex_ready = false;
         }
     }
     return TRUE;

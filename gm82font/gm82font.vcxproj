@@ -24,6 +24,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{9b88384a-89bc-4365-8ef0-102f9ad4b9d6}</ProjectGuid>
     <RootNamespace>gm82font</RootNamespace>
+    <VCToolsVersion>14.44.35207</VCToolsVersion>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -98,6 +99,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)third_party\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ProjectDir)third_party\freetype\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -115,6 +117,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)third_party\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ProjectDir)third_party\freetype\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -130,6 +133,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)third_party\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
        <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -145,6 +149,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)third_party\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
        <GenerateDebugInformation>true</GenerateDebugInformation>
