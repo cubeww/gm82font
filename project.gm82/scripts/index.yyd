@@ -4,8 +4,8 @@ gm82font_shutdown
 gm82font_last_error
 gm82font_font_add
 gm82font_font_delete
-gm82font_font_set_font
-gm82font_font_get_font
+gm82font_draw_set_font
+gm82font_draw_get_font
 gm82font_string_width
 gm82font_string_width_ext
 gm82font_string_height

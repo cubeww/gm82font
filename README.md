@@ -77,7 +77,7 @@ Create a font and make it current:
 ```gml
 var f;
 f = gm82font_font_add("simhei.ttf", 24);
-gm82font_font_set_font(f);
+gm82font_draw_set_font(f);
 ```
 
 Delete a font when you no longer need it:
@@ -122,11 +122,11 @@ Return value:
 
 Releases the font and all cached glyph textures owned by that font.
 
-### `gm82font_font_set_font(font)`
+### `gm82font_draw_set_font(font)`
 
 Sets the current font handle used by measurement and drawing wrappers.
 
-### `gm82font_font_get_font()`
+### `gm82font_draw_get_font()`
 
 Returns the current font handle tracked by the GML wrapper layer.
 
@@ -210,7 +210,7 @@ This makes direct Chinese text usable in the common GM8.2 workflow without needi
 
 The current text pipeline is:
 
-1. GML picks a current font handle with `gm82font_font_set_font`
+1. GML picks a current font handle with `gm82font_draw_set_font`
 2. A draw wrapper normalizes parameters into the core draw call
 3. The DLL decodes the incoming string and applies GM-style `#` line splitting
 4. Layout is computed, including wrap width, line spacing, alignment, scale, and rotation
@@ -260,7 +260,7 @@ If text does not render, check the following first:
 - `gm82font_init()` returned success
 - the font handle from `gm82font_font_add(...)` is valid
 - the font file can actually be found
-- `gm82font_font_set_font(...)` was called before drawing
+- `gm82font_draw_set_font(...)` was called before drawing
 - `gm82font_last_error()` contains a useful message
 
 If you pass a font name such as `simhei.ttf`, make sure that file exists either in the game directory or in `C:\Windows\Fonts`.

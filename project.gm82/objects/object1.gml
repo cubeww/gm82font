@@ -91,7 +91,7 @@ if (f < 0) {
     exit;
 }
 
-gm82font_font_set_font(f);
+gm82font_draw_set_font(f);
 
 draw_set_color(c_white);
 draw_set_alpha(1);
