@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="gm82font/gm82font.vcxproj" Id="9b88384a-89bc-4365-8ef0-102f9ad4b9d6" />
+</Solution>

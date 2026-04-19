@@ -1,0 +1,11 @@
+external_free(global.gm82font_fn_last_error);
+external_free(global.gm82font_fn_font_add);
+external_free(global.gm82font_fn_font_delete);
+external_free(global.gm82font_fn_string_width);
+external_free(global.gm82font_fn_string_width_ext);
+external_free(global.gm82font_fn_string_height);
+external_free(global.gm82font_fn_string_height_ext);
+external_free(global.gm82font_fn_set_text_transform);
+external_free(global.gm82font_fn_set_text_gradient);
+external_free(global.gm82font_fn_draw_text_ext_transformed_color);
+return 1;
